@@ -12,16 +12,16 @@ namespace NGSBlazor.Shared.DTOModels.Identities.Requests
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; } = "";
+        public required string Email { get; set; }
 
         [Required]
         [MinLength(2)]
-        public string UserName { get; set; } = "";
+        public required string UserName { get; set; } 
         [Required]
         [MinLength(5)]
-        public string Password { get; set; } = "";
+        public required string Password { get; set; }
         [Required]
         [Compare(nameof(Password))]
-        public string ConfirmPassword { get; set; } = "";
+        public required string ConfirmPassword { get; set; }
     }
 }

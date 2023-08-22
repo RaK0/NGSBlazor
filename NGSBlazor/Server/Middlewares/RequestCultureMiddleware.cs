@@ -14,7 +14,7 @@ namespace NGSBlazor.Server.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var cultureQuery = context.Request.Query["culture"];
+            StringValues cultureQuery = context.Request.Query["culture"];
             if (!string.IsNullOrWhiteSpace(cultureQuery))
             {
                 var culture = new CultureInfo(cultureQuery);

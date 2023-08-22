@@ -93,10 +93,7 @@ namespace NGSBlazor.Server.Extensions
         {
             services.AddSwaggerGen(async c =>
             {
-                //TODO - Lowercase Swagger Documents
-                //c.DocumentFilter<LowercaseDocumentFilter>();
-                //Refer - https://gist.github.com/rafalkasa/01d5e3b265e5aa075678e0adfd54e23f
-
+                
                 // include all project's xml comments
                 var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -160,8 +157,10 @@ namespace NGSBlazor.Server.Extensions
                 })                
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, bearer =>
                 {
-                    
-                    bearer.RequireHttpsMetadata = false;
+                    if (config.Debug)
+                        bearer.RequireHttpsMetadata = false;
+                    else
+                        bearer.RequireHttpsMetadata = true;
                     bearer.SaveToken = true;
                     bearer.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -172,46 +171,35 @@ namespace NGSBlazor.Server.Extensions
                         RoleClaimType = ClaimTypes.Role,
                         ClockSkew = TimeSpan.Zero                        
                     };
-                    IStringLocalizer localizer = GetRegisteredServerLocalizerAsync<ServerCommonResources>(services).GetAwaiter().GetResult();
+                    IStringLocalizer? localizer = GetRegisteredServerLocalizerAsync<ServerCommonResources>(services).GetAwaiter().GetResult();
 
                     bearer.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            StringValues accessToken = context.Request.Query["access_token"];
-
-                            // If the request is for our hub...
-                            PathString path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                path.StartsWithSegments(ApplicationConstants.SignalR.HubUrl))
-                            {
-                                // Read the token out of the query string
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
-                        },
+                    {                       
                         OnAuthenticationFailed = c =>
                         {
                             if (c.Exception is SecurityTokenExpiredException)
                             {
                                 c.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 c.Response.ContentType = "application/json";
-                                string result = JsonConvert.SerializeObject(Result.Fail(localizer["The Token is expired."]));
+                                string result = JsonConvert.SerializeObject(Result.Fail(localizer?["The Token is expired."]??"Fail"));
                                 return c.Response.WriteAsync(result);
                             }
                             else
                             {
-#if DEBUG
-                                c.NoResult();
-                                c.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                                c.Response.ContentType = "text/plain";
-                                return c.Response.WriteAsync(c.Exception.ToString());
-#else
-                                c.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                                c.Response.ContentType = "application/json";
-                                string result = JsonConvert.SerializeObject(Result.Fail(localizer["An unhandled error has occurred."]));
-                                return c.Response.WriteAsync(result);
-#endif
+                                if (config.Debug)
+                                {
+                                    c.NoResult();
+                                    c.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                                    c.Response.ContentType = "text/plain";
+                                    return c.Response.WriteAsync(c.Exception.ToString());
+                                }
+                                else
+                                {
+                                    c.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                                    c.Response.ContentType = "application/json";
+                                    string result = JsonConvert.SerializeObject(Result.Fail(localizer?["An unhandled error has occurred."]??"Fail"));
+                                    return c.Response.WriteAsync(result);
+                                }                                
                             }
                         },
                         OnChallenge = context =>
@@ -221,7 +209,7 @@ namespace NGSBlazor.Server.Extensions
                             {
                                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 context.Response.ContentType = "application/json";
-                                var result = JsonConvert.SerializeObject(Result.Fail(localizer["You are not Authorized."]));
+                                var result = JsonConvert.SerializeObject(Result.Fail(localizer?["You are not Authorized."]??"Fail"));
                                 return context.Response.WriteAsync(result);
                             }
 
@@ -231,7 +219,7 @@ namespace NGSBlazor.Server.Extensions
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(Result.Fail(localizer["You are not authorized to access this resource."]));
+                            var result = JsonConvert.SerializeObject(Result.Fail(localizer?["You are not authorized to access this resource."] ?? "Fail"));
                             return context.Response.WriteAsync(result);
                         },
                     };
@@ -246,7 +234,7 @@ namespace NGSBlazor.Server.Extensions
                 foreach (var prop in typeof(Permissions).GetNestedTypes().SelectMany(c => c.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)))
                 {
                     object? propertyValue = prop.GetValue(null);
-                    if (propertyValue is not null)
+                    if (propertyValue != null && !string.IsNullOrEmpty(propertyValue.ToString()))
                     {
                         options.AddPolicy(propertyValue.ToString(), policy => policy.RequireClaim(AppClaimTypes.Permission, propertyValue.ToString()));
                     }

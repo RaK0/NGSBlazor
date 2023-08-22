@@ -16,7 +16,7 @@ using System.Security.Claims;
 using System.Text;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
- 
+
 //builder.Logging.AddSerilog();
 //builder.Host.UseSerilog((context, serv, conf) =>
 //{
@@ -30,8 +30,7 @@ builder.Services.AddCors(options =>
             builder
                 .AllowCredentials()
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .WithOrigins("/");
+                .AllowAnyMethod();
         });
 });
 builder.Services.AddApplicationServices();
@@ -69,7 +68,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", typeof(Program).Assembly.GetName().Name);
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "NGS");
         options.RoutePrefix = "swagger";
         options.DisplayRequestDuration();
     });
@@ -79,14 +78,13 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-app.UseCors();
 app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRequestLocalizationByCulture();
 app.UseRouting();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -18,9 +18,9 @@ namespace NGSBlazor.Server.Extensions
         {
             IServiceScope serviceScope = app.ApplicationServices.CreateScope();
 
-            NGSContext context = serviceScope.ServiceProvider.GetService<NGSContext>();
+            NGSContext? context = serviceScope.ServiceProvider.GetService<NGSContext>();
 
-            if (context.Database.IsSqlServer())
+            if (context is not null && context.Database.IsSqlServer())
             {
 #if DEBUG
                 context.Database.EnsureDeleted();
@@ -53,7 +53,7 @@ namespace NGSBlazor.Server.Extensions
                 options.DefaultRequestCulture = new RequestCulture(supportedCultures.First());
                 options.ApplyCurrentCultureToResponseHeaders = true;
             });
-
+            //? potrzebne? zastapic zadaniem do api
             app.UseMiddleware<RequestCultureMiddleware>();
 
             return app;

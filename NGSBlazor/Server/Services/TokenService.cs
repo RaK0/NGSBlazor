@@ -51,7 +51,7 @@ namespace NGSBlazor.Server.Services
                 return await Result<LoginResponse>.FailAsync(_localizer["E-Mail not confirmed."]);
 
             user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(2);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(10);
 
             await _userManager.UpdateAsync(user);
 
@@ -79,7 +79,7 @@ namespace NGSBlazor.Server.Services
                 return await Result<RefreshTokenResponse>.FailAsync(_localizer["Invalid Client Token."]);
             string token = GenerateEncryptedToken(GetSigningCredentials(), await GetClaimsAsync(user));
             user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(2);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(10);
             await _userManager.UpdateAsync(user);
 
             var response = new RefreshTokenResponse { Token = token, RefreshToken = user.RefreshToken, RefreshTokenExpiryTime = user.RefreshTokenExpiryTime };
