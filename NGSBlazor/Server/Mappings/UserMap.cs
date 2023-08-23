@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Entities.Identity;
-using NGSBlazor.Shared.DTOModels.Identities.Response;
+using NGSBlazor.Shared.Identities.Response;
 
 namespace NGSBlazor.Server.Mappings
 {
