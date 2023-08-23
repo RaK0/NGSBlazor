@@ -1,24 +1,7 @@
-﻿using AutoFixture;
-using Castle.Core.Logging;
-using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
+﻿using Microsoft.AspNetCore.Identity;
 using NGSBlazor.Server.Configurations;
-using NGSBlazor.Server.Interfaces.Services;
-using NGSBlazor.Server.Services;
 using NGSBlazor.Shared.Identities.Requests;
 using NGSBlazor.Shared.Identities.Response;
-using NGSBlazor.Shared.Wrapper.Result;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests.Services
 {

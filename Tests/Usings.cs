@@ -1,1 +1,10 @@
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using AutoFixture;
+global using Moq;
+global using Domain.Entities.Identity;
+global using NGSBlazor.Shared.Wrapper.Result;
+global using NGSBlazor.Server.Interfaces.Services;
+global using NGSBlazor.Server.Services;
+global using Microsoft.Extensions.Localization;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
