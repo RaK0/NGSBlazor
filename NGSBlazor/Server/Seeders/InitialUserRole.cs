@@ -54,6 +54,10 @@ namespace NGSBlazor.Server.Seeders
                         adminRoleInDb = await _roleManager.FindByNameAsync(RoleConstants.AdministratorRole);
                         _logger.LogInformation(_localizer["Seeded Administrator Role."]);
                     }
+                    foreach (var permission in Permissions.GetRegisteredPermissions())
+                    {
+                        await _roleManager.AddPermissionClaim(adminRoleInDb, permission);
+                    }
                     NGSUser superUser = new()
                     {
                         Email = ApplicationConstants.AdminUser.Email,
@@ -87,10 +91,7 @@ namespace NGSBlazor.Server.Seeders
                         }                        
                     }
 
-                    foreach (var permission in Permissions.GetRegisteredPermissions())
-                    {
-                        await _roleManager.AddPermissionClaim(adminRoleInDb, permission);
-                    }
+                    
                 }
                 catch (Exception ex)
                 {
