@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using NGSBlazor.Server.Configurations;
@@ -34,6 +37,7 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddApplicationServices();
+builder.Services.AddRepositories();
 builder.Services.AddIdentity();
 builder.Services.AddJwtAuthentication(builder.Configuration.GetSection(nameof(AppConfiguration)).Get<AppConfiguration>() ?? null);
 
@@ -45,13 +49,18 @@ builder.Services.AddLocalization(options =>
 });
 builder.Services.AddConfiguration(builder.Configuration);
 builder.Services.AddAutoMapper();
+builder.Services.AddMediatR();
 builder.Services.AddServerLocalization();
 builder.Services.AddSwagger();
 
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddDatabaseSeeders();
 builder.Services.AddRazorPages();
+builder.Services.AddApiVersioning(config =>
+{
+    config.DefaultApiVersion = new ApiVersion(1, 0);
 
+});
 
 
 WebApplication app = builder.Build();
