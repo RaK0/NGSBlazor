@@ -8,10 +8,6 @@ namespace NGSBlazor.Shared.Constants.Application
 {
     public static class ApplicationConstants
     {
-        public static class SignalR
-        {
-            public const string HubUrl = "/hubSignalR";
-        }
         public static class UserDebugPassword
         {
             public const string Password = "Password";

@@ -73,7 +73,7 @@ namespace NGSBlazor.Shared.Wrapper.Result
         {
         }
 
-        public T Data { get; set; }
+        public T? Data { get; set; }
 
         public new static Result<T> Fail()
         {
