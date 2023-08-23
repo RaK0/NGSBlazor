@@ -8,15 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using NGSBlazor.Server.Interfaces.Identities;
 using NGSBlazor.Shared.Constants.Role;
-using NGSBlazor.Shared.DTOModels.Identities.Requests;
-using NGSBlazor.Shared.DTOModels.Identities.Response;
+using NGSBlazor.Shared.Identities.Requests;
+using NGSBlazor.Shared.Identities.Response;
 using NGSBlazor.Shared.Wrapper.Result;
 using System.Text;
 using System.Text.Encodings.Web;
 
 namespace NGSBlazor.Server.Services
 {
-    public class UserService : IUserService
+    internal class UserService : IUserService
     {
         readonly UserManager<NGSUser> _userManager;
         readonly IStringLocalizer<UserService> _localizer;
@@ -31,7 +31,7 @@ namespace NGSBlazor.Server.Services
             _mapper = mapper;
         }
 
-        public async Task<Shared.Wrapper.Result.IResult> RegisterAsync(RegisterRequest request, string origin)
+        public async Task<Shared.Wrapper.Result.IResult> RegisterAsync(RegisterRequest request, string? origin)
         {
             NGSUser? userWithSameUserName = await _userManager.FindByNameAsync(request.UserName);
             NGSUser? userWithSameEmail = await _userManager.FindByEmailAsync(request.Email);
@@ -105,12 +105,12 @@ namespace NGSBlazor.Server.Services
             UserResponse result = _mapper.Map<UserResponse>(user);
             return await Result<UserResponse>.SuccessAsync(result);
         }
-        async Task<string> GetVerificationEmailLink(NGSUser user, string origin)
+        async Task<string> GetVerificationEmailLink(NGSUser user, string? origin)
         {
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             string route = "api/identity/user/confirm-email/";
-            Uri endpointUri = new (string.Concat($"{origin}/", route));
+            Uri endpointUri = new (string.Concat($"{origin??""}/", route));
             string verificationUri = QueryHelpers.AddQueryString(endpointUri.ToString(), "userId", user.Id.ToString());
             verificationUri = QueryHelpers.AddQueryString(verificationUri, "code", code);
             return verificationUri;
