@@ -6,8 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using NGSBlazor.Server.Configurations;
 using NGSBlazor.Server.Controllers.Identity;
 using NGSBlazor.Server.Interfaces.Services;
-using NGSBlazor.Shared.DTOModels.Identities.Requests;
-using NGSBlazor.Shared.DTOModels.Identities.Response;
+using NGSBlazor.Shared.Identities.Requests;
+using NGSBlazor.Shared.Identities.Response;
 using NGSBlazor.Shared.Wrapper.Result;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
@@ -62,9 +62,9 @@ namespace NGSBlazor.Server.Services
 
         public async Task<Result<RefreshTokenResponse>> GetRefreshTokenAsync(RefreshTokenRequest refreshTokenRequest)
         {
-            if (refreshTokenRequest is null)            
+            if (refreshTokenRequest is null)
                 return await Result<RefreshTokenResponse>.FailAsync(_localizer["Invalid Client Token."]);
-            
+
             ClaimsPrincipal? userPrincipal = GetPrincipalFromExpiredToken(refreshTokenRequest.Token);
             if (userPrincipal == null)
                 return await Result<RefreshTokenResponse>.FailAsync(_localizer["Invalid Credentials."]);
@@ -96,23 +96,25 @@ namespace NGSBlazor.Server.Services
                claims: claims,
                expires: DateTime.UtcNow.AddHours(5),
                signingCredentials: signingCredentials);
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
             string encryptedToken = tokenHandler.WriteToken(token);
             return encryptedToken;
         }
         private async Task<IEnumerable<Claim>> GetClaimsAsync([NotNull] NGSUser user)
         {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-            var permissionClaims = new List<Claim>();
+            IList<Claim> userClaims = await _userManager.GetClaimsAsync(user);
+            userClaims ??= new List<Claim>();
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+            roles ??= new List<string>();
+            List<Claim> roleClaims = new();
+            List<Claim> permissionClaims = new();
             foreach (var role in roles)
             {
                 roleClaims.Add(new Claim(ClaimTypes.Role, role));
                 NGSRole? thisRole = await _roleManager.FindByNameAsync(role);
                 if (thisRole is not null)
                 {
-                    var allPermissionsForThisRoles = await _roleManager.GetClaimsAsync(thisRole);
+                    IList<Claim> allPermissionsForThisRoles = await _roleManager.GetClaimsAsync(thisRole);
                     permissionClaims.AddRange(allPermissionsForThisRoles);
                 }
             }
@@ -147,7 +149,7 @@ namespace NGSBlazor.Server.Services
                 ClockSkew = TimeSpan.Zero,
                 ValidateLifetime = false
             };
-            
+
             ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
             if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
                 StringComparison.InvariantCultureIgnoreCase))
