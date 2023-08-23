@@ -14,6 +14,5 @@ namespace NGSBlazor.Server.Services
                 UserId = result;                    
             Claims = httpContextAccessor.HttpContext?.User?.Claims.AsEnumerable().Select(item => new KeyValuePair<string, string>(item.Type, item.Value)).ToList();
         }
-        
     }
 }
