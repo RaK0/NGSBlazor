@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NGSBlazor.Server.Interfaces.Services;
 using NGSBlazor.Server.Seeders;
-using NGSBlazor.Shared.DTOModels.Identities.Requests;
+using NGSBlazor.Shared.Identities.Requests;
 using Serilog;
 
 namespace NGSBlazor.Server.Controllers.Identity
 {
     [Route("api/identity/token")]
     [ApiController]
+    [ApiVersionNeutral]
     public class TokenController : ControllerBase
     {
         private readonly ITokenService _tokenService;

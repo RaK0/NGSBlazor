@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using NGSBlazor.Server.Interfaces.Identities;
 using NGSBlazor.Server.Services;
-using NGSBlazor.Shared.DTOModels.Identities.Requests;
+using NGSBlazor.Shared.Identities.Requests;
 
 namespace NGSBlazor.Server.Controllers.Identity
 {
     [Route("api/identity/user")]
     [ApiController]
+    [ApiVersionNeutral]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -27,7 +28,7 @@ namespace NGSBlazor.Server.Controllers.Identity
         [HttpPost]
         public async Task<IActionResult> RegisterAsync(RegisterRequest request)
         {
-            StringValues origin = Request.Headers["origin"];
+            StringValues? origin = Request.Headers["origin"];
             return Ok(await _userService.RegisterAsync(request, origin));
         }
         /// <summary>
