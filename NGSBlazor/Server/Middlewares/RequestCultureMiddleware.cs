@@ -14,10 +14,10 @@ namespace NGSBlazor.Server.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            StringValues cultureQuery = context.Request.Query["culture"];
-            if (!string.IsNullOrWhiteSpace(cultureQuery))
+            StringValues? cultureQuery = context.Request.Query["culture"];
+            if (cultureQuery.HasValue && !string.IsNullOrWhiteSpace(cultureQuery.Value) && cultureQuery.Value != StringValues.Empty && cultureQuery.ToString()!=null)
             {
-                var culture = new CultureInfo(cultureQuery);
+                CultureInfo culture = new(cultureQuery.ToString()??"");
 
                 CultureInfo.CurrentCulture = culture;
                 CultureInfo.CurrentUICulture = culture;
@@ -27,7 +27,7 @@ namespace NGSBlazor.Server.Middlewares
                 StringValues cultureHeader = context.Request.Headers["Accept-Language"];
                 if (cultureHeader.Any())
                 {
-                    CultureInfo culture = new (cultureHeader.First().Split(',').First().Trim());
+                    CultureInfo culture = new(cultureHeader.First().Split(',').First().Trim());
 
                     CultureInfo.CurrentCulture = culture;
                     CultureInfo.CurrentUICulture = culture;
