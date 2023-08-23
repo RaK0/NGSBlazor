@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using NGSBlazor.Shared.Constants.Permission;
-using NGSBlazor.Shared.DTOModels.Identities.Response;
+using NGSBlazor.Shared.Identities.Response;
 using System.ComponentModel;
 using System.Reflection;
 using System.Security.Claims;
