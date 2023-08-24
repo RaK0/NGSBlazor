@@ -54,6 +54,12 @@ namespace NGSBlazor.Server.Seeders
                         adminRoleInDb = await _roleManager.FindByNameAsync(RoleConstants.AdministratorRole);
                         _logger.LogInformation(_localizer["Seeded Administrator Role."]);
                     }
+                    if(adminRoleInDb == null)
+                    {
+                        _logger.LogInformation(_localizer["Error on Administrator Role."]);
+                        return;
+                    }
+                        
                     foreach (var permission in Permissions.GetRegisteredPermissions())
                     {
                         await _roleManager.AddPermissionClaim(adminRoleInDb, permission);
@@ -93,7 +99,7 @@ namespace NGSBlazor.Server.Seeders
 
                     
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     _logger.LogInformation(_localizer["Error creating admin."]);
                 }
@@ -130,7 +136,7 @@ namespace NGSBlazor.Server.Seeders
                         _logger.LogInformation(_localizer["Seeded User with Basic Role."]);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     _logger.LogInformation(_localizer["Error creating basic."]);
                 }
