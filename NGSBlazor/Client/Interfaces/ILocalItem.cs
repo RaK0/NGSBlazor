@@ -2,6 +2,6 @@
 {
     public interface ILocalItem
     {
-        public string Name { get; }
+        string Name { get; }
     }
 }

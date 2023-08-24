@@ -4,7 +4,8 @@ namespace NGSBlazor.Client.LocalItems
 {
     public class RememberMeLocalItem : ILocalItem
     {
-        public string Name => "RememberMe";
-        public bool? Value { get; set; }        
+        public bool? Value { get; set; }
+
+        string ILocalItem.Name => "RememberMe";
     }
 }

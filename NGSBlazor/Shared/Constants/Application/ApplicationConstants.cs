@@ -22,5 +22,6 @@ namespace NGSBlazor.Shared.Constants.Application
             public const string Username = "NGS_Test";
             public const string Email = "basic@ngs.pl";
         }
+        public static string HttpClientName = "NGSBlazor.ServerAPI";
     }
 }

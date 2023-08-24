@@ -15,6 +15,6 @@ namespace NGSBlazor.Shared.Wrapper.Result
 
     public interface IResult<out T> : IResult
     {
-        T Data { get; }
+        T? Data { get; }
     }
 }

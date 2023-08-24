@@ -11,16 +11,16 @@ namespace NGSBlazor.Client.Extensions
     {
         public static async Task SetLanguage(this WebAssemblyHost host)
         {
-            ILocalStorageService? coockieService = host.Services.GetService<ILocalStorageService>();
+            ILocalItemStorageService? coockieService = host.Services.GetService<ILocalItemStorageService>();
             if (coockieService != null)
             {
-                LanguageLocalItem? langCookie = await coockieService.GetCookie<LanguageLocalItem>();
+                LanguageLocalItem? langCookie = await coockieService.GetLocalItem<LanguageLocalItem>();
                 if (langCookie != null)
                 {
                     if (langCookie.Code == null)
                     {
                         langCookie.Code = LocalizationConstants.SupportedLanguages.First().Code;
-                        _=coockieService.SetCookie(langCookie);
+                        _=coockieService.SetLocalItem(langCookie);
                         SetDefault();
                     }
                     else

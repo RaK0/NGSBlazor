@@ -8,12 +8,16 @@ using NGSBlazor.Client.Services;
 using NGSBlazor.Shared.Constants.Permission;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using NGSBlazor.Client.Interfaces.Authentication;
+using NGSBlazor.Client.Services.Authentication;
+using NGSBlazor.Client.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace NGSBlazor.Client.Extensions
 {
     public static class WebAssemblyHostBuilderExtensions
     {
-        public static WebAssemblyHostBuilder AddClientStuff(this WebAssemblyHostBuilder builder)
+        public static WebAssemblyHostBuilder AddClientServices(this WebAssemblyHostBuilder builder)
         {
             builder
                 .Services
@@ -32,14 +36,16 @@ namespace NGSBlazor.Client.Extensions
                     configuration.SnackbarConfiguration.ShowCloseIcon = true;
                 });
             builder.AddServices();
-
+            
             return builder;
         }
         private static WebAssemblyHostBuilder AddServices(this WebAssemblyHostBuilder builder)
         {
-            builder.Services.AddScoped<Interfaces.Services.ILocalStorageService, LocalStorageService>();
+            builder.Services.AddScoped<ILocalItemStorageService, LocalItemStorageService>();
+            builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+            builder.Services.AddScoped<AuthenticationStateProvider, NGSBlazorStateProvider>();
+            builder.Services.AddScoped<AuthetnicateDelegatingHandler>();
 
-            
             return builder;
         }       
         private static void RegisterPermissionClaims(AuthorizationOptions options)
