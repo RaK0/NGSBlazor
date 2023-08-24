@@ -122,6 +122,7 @@ namespace NGSBlazor.Server.Services
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName??""),
             }
             .Union(userClaims)
             .Union(roleClaims)
