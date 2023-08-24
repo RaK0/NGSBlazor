@@ -17,6 +17,7 @@ namespace NGSBlazor.Server.Controllers.v1
             return Ok(await _mediator.Send(addSlider));
         }
 
+        [Authorize(Policy = Permissions.Slider.Edit)]
         [HttpPatch] 
         public async Task<IActionResult> Update(EditSliderCommand editSlider) 
         {
