@@ -47,7 +47,7 @@ namespace NGSBlazor.Client.Services.Authentication
             {
                 string token = result.Data.Token;
                 string refreshToken = result.Data.RefreshToken;
-                BearerLocalItem localBearer = new BearerLocalItem()
+                BearerLocalItem localBearer = new()
                 {
                     Token = token,
                     RefreshToken = refreshToken
@@ -71,7 +71,6 @@ namespace NGSBlazor.Client.Services.Authentication
         {
             await _localItemStorageService.ClearItem<BearerLocalItem>();
             await _authenticationStateProvider.StateChangedAsync();
-            //_authenticationStateProvider.MarkUserAsLoggedOut();
             return await Result.SuccessAsync();
         }
 

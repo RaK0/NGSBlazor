@@ -29,13 +29,6 @@ namespace NGSBlazor.Client.Authentication
             return Task.CompletedTask;
         }
 
-        public void MarkUserAsLoggedOut()
-        {
-            Task<AuthenticationState> authState = Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
-
-            NotifyAuthenticationStateChanged(authState);
-        }
-
         public async Task<ClaimsPrincipal> GetAuthenticationStateProviderUserAsync()
         {
             AuthenticationState state = await GetAuthenticationStateAsync();
