@@ -20,10 +20,10 @@ namespace NGSBlazor.Client.Services
         public async Task<T?> GetLocalItem<T>() where T : class, ILocalItem
         {
             Type type = typeof(T);
-            PropertyInfo? nameProperty = type.GetProperty(nameof(type.Name));
-            if (nameProperty == null)
+            T? instance = (T?)Activator.CreateInstance(type);          
+            if (instance == null)
                 return null;
-            T localItem = await _localStorageService.GetItemAsync<T>(nameProperty.Name);
+            T localItem = await _localStorageService.GetItemAsync<T>(instance.Name);
 
             return localItem ?? null;
         }
