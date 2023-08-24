@@ -1,0 +1,74 @@
+﻿@page "/login"
+@using NGSBlazor.Shared.Identities.Requests;
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+@inject IAuthenticationManager _authManager
+
+<CascadingAuthenticationState>
+    <AuthorizeView Context="requestContext">
+        <NotAuthorized>
+            <EditForm Model="@_loginRequest" OnValidSubmit="SubmitAsync">
+                <FluentValidationValidator @ref="_fluentValidationValidator" />
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField T="string" Label="Login lub email" Variant="Variant.Outlined"
+                                      @bind-Value="_loginRequest.Username" For="@(() => _loginRequest.Username)" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="Hasło" Variant="Variant.Outlined"
+                                      @bind-Value="_loginRequest.Password" For="@(() => _loginRequest.Password)"
+                                      InputType="@InputType.Password" />
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex justify-center">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Disabled="@(!Validated)" Color="Color.Primary" Size="Size.Small" Style="width: 50%;">Zaloguj</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+            <MudButton ButtonType="ButtonType.Button" OnClick="AdminCred" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Style="width: 50%;">Dodaj admina kred</MudButton>
+        </NotAuthorized>
+        <Authorized>
+            Zalogowany! nazwa: @currUser?.Identity?.Name id: @currUser?.Claims.FirstOrDefault(x=>x.Type==ClaimTypes.NameIdentifier)?.Value
+            <MudButton ButtonType="ButtonType.Button" OnClick="Logout" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Style="width: 50%;">Wyloguj</MudButton>
+
+        </Authorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+    LoginRequest _loginRequest = new() { Password = "", Username = "" };
+    ClaimsPrincipal? currUser;
+    FluentValidationValidator? _fluentValidationValidator;
+    private bool Validated => _fluentValidationValidator != null ? _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); }) : true;
+
+    protected override async Task OnInitializedAsync()
+    {
+            currUser = await _authManager.CurrentUser();     
+    }
+    private async Task SubmitAsync()
+    {
+        var result = await _authManager.Login(_loginRequest);
+        if (!result.Succeeded)
+        {
+            foreach (var message in result.Messages)
+            {
+                _snackBar.Add(message, Severity.Error);
+            }
+        }
+        else
+        {
+            currUser = await _authManager.CurrentUser();
+        }
+    }
+    private void AdminCred()
+    {
+        _loginRequest.Username = "ngs_admin";
+        _loginRequest.Password = "Password";
+    }
+    private async void Logout()
+    {
+        var result = await _authManager.Logout();
+    }
+}
