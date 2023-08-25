@@ -118,7 +118,7 @@ namespace NGSBlazor.Client.Services.Authentication
                     if (ticks is not null)
                     {
                         DateTime expDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(ticks)).UtcDateTime;
-                        if ((expDate - DateTime.UtcNow).Minutes <= 30)
+                        if ((expDate - DateTime.UtcNow).Minutes <= 120)
                         {
                             return await RefreshToken();
                         }

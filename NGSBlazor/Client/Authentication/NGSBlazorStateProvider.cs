@@ -45,10 +45,10 @@ namespace NGSBlazor.Client.Authentication
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
             JwtSecurityToken jwt = new JwtSecurityTokenHandler().ReadJwtToken(savedToken.Token);
-            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", savedToken.Token);
-            AuthenticationState state = new(new ClaimsPrincipal(new ClaimsIdentity(jwt.Claims, "Bearer")));
+            if (jwt.ValidTo < DateTime.UtcNow)
+                return new(new ClaimsPrincipal(new ClaimsIdentity()));
 
-            return state;
+            return new(new ClaimsPrincipal(new ClaimsIdentity(jwt.Claims, "Bearer")));
 
         }
     }
